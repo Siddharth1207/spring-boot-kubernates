@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: bitnami/mariadb
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: root
+            - name: MARIADB_DATABASE
+              value: employee_db
+            - name: MARIADB_USER
+              value: employee
+            - name: MARIADB_PASSWORD
+              value: root
+
+          ports:
+            - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-service
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP

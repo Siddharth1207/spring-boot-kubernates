@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-crud-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spring-boot-crud
+  template:
+    metadata:
+      labels:
+        app: spring-boot-crud
+    spec:
+      containers:
+        - name: spring-boot-crud
+          image: spring-boot-crud:1.0 # Replace with the actual image name
+          ports:
+            - containerPort: 8080  # Adjust the port if needed
+          env:
+            - name: DB_HOST
+              value: mariadb-service  # Replace with the actual database service name or IP
+            - name: DB_NAME
+              value: employee_db  # Replace with your database name
+            - name: DB_USERNAME
+              value: employee  # Replace with your database username
+            - name: DB_PASSWORD
+              value: root  # Replace with your database password
+---
+# NodePort service to expose the Spring Boot application
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-boot-crud-service
+spec:
+  selector:
+    app: spring-boot-crud
+  ports:
+    - protocol: TCP
+      port: 8080  # Port on which your Spring Boot app is listening
+      targetPort: 8080
+  type: NodePort  # Expose as NodePort
